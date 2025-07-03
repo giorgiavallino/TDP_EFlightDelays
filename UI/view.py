@@ -19,6 +19,7 @@ class View(ft.UserControl):
         self._btnConnessi = None
         self._ddAeroportoA = None
         self._txtTratteMax = None
+        self._btnPercorso = None
         self._btnCerca = None
 
     def load_interface(self):
@@ -45,10 +46,13 @@ class View(ft.UserControl):
                         alignment=ft.MainAxisAlignment.CENTER)
         self._ddAeroportoA = ft.Dropdown(label="Aeroporto di arrivo")
         self._txtTratteMax = ft.TextField(label="Numero tratte massimo")
+        self._btnPercorso = ft.ElevatedButton(text="Cerca percorso",
+                                              on_click=self._controller.handlePercorso)
         self._btnCerca = ft.ElevatedButton(text="Cerca itinerario",
                                            on_click=self._controller.handleCerca)
         row_03 = ft.Row([ft.Container(self._ddAeroportoA, width=250),
                          ft.Container(self._txtTratteMax, width=250),
+                         ft.Container(self._btnPercorso, width=250),
                          ft.Container(self._btnCerca, width=250)],
                         alignment=ft.MainAxisAlignment.CENTER)
         self._page.add(row_01, row_02, row_03)

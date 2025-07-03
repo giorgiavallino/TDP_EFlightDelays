@@ -56,3 +56,29 @@ class DAO():
         cursor.close()
         conn.close()
         return result
+
+    @staticmethod
+    def getAllEdges_02(idMapAirports):
+        conn = DBConnect.get_connection()
+        result = []
+        cursor = conn.cursor(dictionary=True)
+        query = """select t1.ORIGIN_AIRPORT_ID, t1.DESTINATION_AIRPORT_ID, COALESCE(t1.n, 0) + COALESCE(t2.n, 0) as TOT
+                from (select f.ORIGIN_AIRPORT_ID, f.DESTINATION_AIRPORT_ID, COUNT(*) as n
+                from flights f
+                group by f.ORIGIN_AIRPORT_ID, f.DESTINATION_AIRPORT_ID
+                order by f.ORIGIN_AIRPORT_ID, f.DESTINATION_AIRPORT_ID) t1
+                left join (select f.ORIGIN_AIRPORT_ID, f.DESTINATION_AIRPORT_ID, COUNT(*) as n
+                from flights f
+                group by f.ORIGIN_AIRPORT_ID, f.DESTINATION_AIRPORT_ID
+                order by f.ORIGIN_AIRPORT_ID, f.DESTINATION_AIRPORT_ID) t2
+                on t1.ORIGIN_AIRPORT_ID = t2.DESTINATION_AIRPORT_ID and
+                t1.DESTINATION_AIRPORT_ID = t2.ORIGIN_AIRPORT_ID
+                where t1.ORIGIN_AIRPORT_ID < t1.DESTINATION_AIRPORT_ID or t2.ORIGIN_AIRPORT_ID is NULL"""
+        cursor.execute(query, )
+        for row in cursor:
+            result.append(Arco(idMapAirports[row["ORIGIN_AIRPORT_ID"]],
+                               idMapAirports[row["DESTINATION_AIRPORT_ID"]],
+                               row["TOT"]))
+        cursor.close()
+        conn.close()
+        return result
